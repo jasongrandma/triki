@@ -1,21 +1,37 @@
-im going to plan a large project: a website with at least 5 working features
+Key Planning Questions:
+1. What type of website do you want to build?
 
-The user wants to plan a large project - a website with at least 5 working features. This is a planning request, not an implementation request yet. I should help them plan this project effectively.
+E-commerce platform
+Social network/community site
+Portfolio/showcase site
+Educational/learning platform
+Booking/reservation system
+Content management system
+Something else?
+2. What's your preferred technology approach?
 
-Looking at their workspace, I can see they have experience with:
+Static HTML/CSS/JS (like your InkSeek project)
+React-based SPA (like your Candle-Lit project)
+Full-stack with backend (Node.js, databases, etc.)
+Other framework?
+3. What level of complexity are you aiming for?
 
-HTML/CSS/JavaScript projects (inkseek, charmwell)
-React applications (multiple React projects)
-Docker containers
-Both frontend and some backend work (dev-notes-server)
-Since this is a planning phase for a complex multi-step project, I should use the manage_todo_list tool to help organize the planning process. Let me break down what we need to plan:
+Frontend-only with localStorage/JSON
+Backend with database and authentication
+Real-time features (chat, notifications)
+Third-party integrations (payments, APIs)
+4. Any specific features in mind already?
 
-Define the website concept and purpose
+User authentication/profiles
+Search and filtering
+CRUD operations
+File uploads
+Messaging/chat
+Payment processing
+Others?
+5. Is this for a class project, portfolio piece, or personal use?
 
-
-
-I'm creating a personal wiki for a climbing game "Cairn" as a static HTML/CSS/JS site. I'm required to store data in the browser with localStorage or IndexedDB. I'm thinking CRUD, auth/profiles, search/filter,
-
+Static HTML/CSS/JS site. Required to store data in the browser with localStorage or IndexedDB.
 
 Personal Wiki with Custom Color Themes and Color-Coded Categories
 Core Features:
