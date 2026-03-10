@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Triki | Personal Wiki</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body id="app-shell">
+    <header id="top-navbar">
+        <div id="nav-brand">Triki</div>
+        <nav id="nav-links" aria-label="Top navigation">
+            <a href="#" id="nav-home">Home</a>
+            <a href="#" id="nav-wiki">My Wiki</a>
+            <a href="#" id="nav-themes">Themes</a>
+        </nav>
+    </header>
+
+    <div id="page-layout">
+        <aside id="sidebar-placeholder" aria-label="Sidebar placeholder">
+            <h2 id="sidebar-title">Sidebar</h2>
+            <p id="sidebar-description">Placeholder for collapsible table of contents and navigation links.</p>
+            <div id="sidebar-tree" aria-label="Category tree example">
+                <div class="tree-row root-row">
+                    <div class="tree-node root-node">Knowledge Base</div>
+                </div>
+
+                <div class="tree-row branch-row">
+                    <div class="tree-node branch-node">Web Dev</div>
+                    <div class="tree-node branch-node">Design</div>
+                    <div class="tree-node branch-node">Projects</div>
+                </div>
+
+                <div class="tree-row leaf-row">
+                    <div class="tree-leaf-card">
+                        <span class="tree-leaf">HTML Basics</span>
+                        <span class="tree-leaf">CSS Layout</span>
+                    </div>
+                    <div class="tree-leaf-card">
+                        <span class="tree-leaf">Color Contrast Notes</span>
+                        <span class="tree-leaf">UI Patterns</span>
+                    </div>
+                    <div class="tree-leaf-card">
+                        <span class="tree-leaf">Triki Milestones</span>
+                        <span class="tree-leaf">Demo Checklist</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main id="main-content">
+            <section id="hero-section">
+                <p id="hero-eyebrow">Personal Wiki Project</p>
+                <h1 id="hero-title">A color-coded knowledge tree for your notes.</h1>
+                <p id="hero-body">
+                    Triki is a static HTML, CSS, and JavaScript app that helps you organize entries inside a vertical
+                    category
+                    hierarchy with theme-ready colors. Data is saved in-browser with localStorage for a fast,
+                    backend-free
+                    workflow.
+                </p>
+            </section>
+
+            <section id="theme-foundation" aria-labelledby="theme-foundation-title">
+                <h2 id="theme-foundation-title">Theme Foundation Colors</h2>
+                <p id="theme-foundation-text">Distinct IDs are defined for primary, secondary, tertiary, and accent
+                    colors to support future custom themes.</p>
+                <div id="theme-swatches" role="presentation">
+                    <div id="color-primary" class="swatch">Primary</div>
+                    <div id="color-secondary" class="swatch">Secondary</div>
+                    <div id="color-tertiary" class="swatch">Tertiary</div>
+                    <div id="color-accent" class="swatch">Accent</div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>
