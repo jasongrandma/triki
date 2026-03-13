@@ -13,41 +13,98 @@
         <div id="nav-brand">Triki</div>
         <nav id="nav-links" aria-label="Top navigation">
             <a href="#" id="nav-home">Home</a>
-            <a href="#" id="nav-wiki">My Wiki</a>
-            <a href="#" id="nav-themes">Themes</a>
+            <a href="#" id="nav-themes" aria-controls="theme-section" aria-expanded="false">Themes</a>
+            <button id="nav-reset" type="button">Reset</button>
         </nav>
+
+        <section id="theme-section" aria-label="Theme settings" hidden>
+            <div id="theme-section-header">
+                <h2 id="theme-section-title">Theme Settings</h2>
+                <p id="theme-section-subtitle">Create, apply, and manage saved color themes.</p>
+            </div>
+
+            <form id="theme-editor-form" novalidate>
+                <input type="hidden" id="theme-edit-id" value="" />
+                <label class="theme-field" for="theme-name-input">
+                    <span>Theme Name</span>
+                    <input type="text" id="theme-name-input" maxlength="60" required placeholder="My Theme" />
+                </label>
+
+                <div id="theme-color-grid">
+                    <label class="theme-field" for="theme-primary-hex">
+                        <span>Primary</span>
+                        <div class="color-input-row">
+                            <input type="color" id="theme-primary-picker" value="#f3f4f6" />
+                            <input type="text" id="theme-primary-hex" maxlength="7" value="#f3f4f6"
+                                placeholder="#f3f4f6" />
+                        </div>
+                    </label>
+
+                    <label class="theme-field" for="theme-secondary-hex">
+                        <span>Secondary</span>
+                        <div class="color-input-row">
+                            <input type="color" id="theme-secondary-picker" value="#e5e7eb" />
+                            <input type="text" id="theme-secondary-hex" maxlength="7" value="#e5e7eb"
+                                placeholder="#e5e7eb" />
+                        </div>
+                    </label>
+
+                    <label class="theme-field" for="theme-tertiary-hex">
+                        <span>Tertiary</span>
+                        <div class="color-input-row">
+                            <input type="color" id="theme-tertiary-picker" value="#d1d5db" />
+                            <input type="text" id="theme-tertiary-hex" maxlength="7" value="#d1d5db"
+                                placeholder="#d1d5db" />
+                        </div>
+                    </label>
+
+                    <label class="theme-field" for="theme-accent-hex">
+                        <span>Accent</span>
+                        <div class="color-input-row">
+                            <input type="color" id="theme-accent-picker" value="#6b7280" />
+                            <input type="text" id="theme-accent-hex" maxlength="7" value="#6b7280"
+                                placeholder="#6b7280" />
+                        </div>
+                    </label>
+                </div>
+
+                <div class="theme-editor-actions">
+                    <button type="submit" id="btn-save-theme">Save Theme</button>
+                    <button type="button" id="btn-theme-reset">Reset Form</button>
+                </div>
+            </form>
+
+            <div id="saved-themes-wrap">
+                <h3 id="saved-themes-title">Saved Themes</h3>
+                <div id="saved-themes-list" aria-live="polite"></div>
+            </div>
+        </section>
     </header>
 
     <div id="page-layout">
-        <aside id="sidebar-placeholder" aria-label="Sidebar placeholder">
-            <h2 id="sidebar-title">Sidebar</h2>
-            <p id="sidebar-description">Placeholder for collapsible table of contents and navigation links.</p>
-            <div id="sidebar-tree" aria-label="Category tree example">
-                <div class="tree-row root-row">
-                    <div class="tree-node root-node">Knowledge Base</div>
-                </div>
-
-                <div class="tree-row branch-row">
-                    <div class="tree-node branch-node">Web Dev</div>
-                    <div class="tree-node branch-node">Design</div>
-                    <div class="tree-node branch-node">Projects</div>
-                </div>
-
-                <div class="tree-row leaf-row">
-                    <div class="tree-leaf-card">
-                        <span class="tree-leaf">HTML Basics</span>
-                        <span class="tree-leaf">CSS Layout</span>
-                    </div>
-                    <div class="tree-leaf-card">
-                        <span class="tree-leaf">Color Contrast Notes</span>
-                        <span class="tree-leaf">UI Patterns</span>
-                    </div>
-                    <div class="tree-leaf-card">
-                        <span class="tree-leaf">Triki Milestones</span>
-                        <span class="tree-leaf">Demo Checklist</span>
-                    </div>
-                </div>
+        <aside id="sidebar" aria-label="Category navigation">
+            <div id="sidebar-header">
+                <h2 id="sidebar-title">Categories</h2>
+                <button id="sidebar-toggle" type="button" aria-label="Collapse categories sidebar" aria-expanded="true"
+                    title="Toggle sidebar">
+                    <span class="sidebar-toggle-line" aria-hidden="true"></span>
+                    <span class="sidebar-toggle-line" aria-hidden="true"></span>
+                    <span class="sidebar-toggle-line" aria-hidden="true"></span>
+                </button>
             </div>
+            <button id="btn-new-category" type="button">New Category</button>
+            <form id="new-category-form" hidden novalidate>
+                <input type="text" id="cat-name-input" placeholder="Category name" maxlength="60" required />
+                <div class="color-input-row">
+                    <input type="color" id="cat-color-picker" value="#6b7280" />
+                    <input type="text" id="cat-color-hex" placeholder="#6b7280" maxlength="7" />
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Add Category</button>
+                    <button type="button" id="btn-cancel-category">Cancel</button>
+                </div>
+            </form>
+            <ul id="sidebar-category-list" aria-label="Category list"></ul>
         </aside>
 
         <main id="main-content">
@@ -63,19 +120,39 @@
                 </p>
             </section>
 
-            <section id="theme-foundation" aria-labelledby="theme-foundation-title">
-                <h2 id="theme-foundation-title">Theme Foundation Colors</h2>
-                <p id="theme-foundation-text">Distinct IDs are defined for primary, secondary, tertiary, and accent
-                    colors to support future custom themes.</p>
-                <div id="theme-swatches" role="presentation">
-                    <div id="color-primary" class="swatch">Primary</div>
-                    <div id="color-secondary" class="swatch">Secondary</div>
-                    <div id="color-tertiary" class="swatch">Tertiary</div>
-                    <div id="color-accent" class="swatch">Accent</div>
+            <section id="tree-section" aria-label="Note tree">
+                <div id="tree-toolbar">
+                    <button id="btn-add-note" type="button" aria-label="Add new note" title="Add new note">+</button>
+                    <button id="btn-import" type="button">Import</button>
+                    <button id="btn-export" type="button">Export</button>
+                    <input id="search-input" type="search" placeholder="Search notes..." aria-label="Search notes" />
+                    <select id="search-scope" aria-label="Search filter">
+                        <option value="both">Title + Text</option>
+                        <option value="title">Title</option>
+                        <option value="text">Text</option>
+                    </select>
+                    <button id="btn-clear-search" type="button">Clear</button>
                 </div>
+                <input id="import-file-input" type="file" accept="application/json,.json" hidden />
+                <div id="tree-root-line" aria-hidden="true"></div>
+                <form id="add-note-form" hidden novalidate>
+                    <input type="text" id="note-title-input" placeholder="Note title" maxlength="120" required />
+                    <textarea id="note-text-input" placeholder="Note text (optional)..." rows="3"></textarea>
+                    <div class="form-row">
+                        <select id="note-category-select" aria-label="Category">
+                            <option value="">Uncategorized</option>
+                        </select>
+                        <div class="form-actions">
+                            <button type="submit">Save Note</button>
+                            <button type="button" id="btn-cancel-note">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+                <div id="main-tree" aria-live="polite" aria-label="Notes organized by category"></div>
             </section>
         </main>
     </div>
+    <script type="module" src="scripts/app.js"></script>
 </body>
 
 </html>
