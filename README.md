@@ -3,109 +3,58 @@
 ## Project Overview
 Triki is a static frontend Personal Wiki built with HTML, CSS, and JavaScript.
 
-The app organizes notes in a color-coded structure with browser persistence via localStorage. No backend is required.
+The app lets users create and organize notes using nested, color-coded categories in a vertical tree hierarchy. Data is stored in the browser using `localStorage`, with no backend required.
 
-## Original Planning Baseline (Conversation Start)
+## Project Description
+I built Triki as a personal custom wiki that lets me organize notes inside a visual category structure instead of a plain list. My goal was to make something that felt more interactive and personal than a basic notes app, while still staying fully frontend and easy to run. The project focuses on note organization, theme customization, and browser-based persistence so everything works without a server.
 
-This README section records the original plan, recommendations, and warnings from the beginning of the project conversation so continuation work stays aligned with the initial strategy.
+## Technologies Used
+- HTML5 for structure and layout
+- CSS3 for styling, responsive layout, and theme variables
+- Vanilla JavaScript for app logic and DOM interactions
+- `localStorage` for client-side persistence
+- JSON for the stored data structure and import/export flow
 
-## Initial Project State
-- Foundation was visually in place: CSS variables, sidebar/main layout, static placeholders.
-- Functional behavior was expected to be implemented in JavaScript modules.
+## Setup Instructions
+Open https://triki-mid.netlify.app/ in a browser. Create categories from the sidebar, then create notes and assign them to those categories. Everything saves in the browser automatically.
 
-## Deliverable-by-Deliverable Plan Notes
+## Known Bugs and Limitations
+- Because the app uses `localStorage`, stored data is limited by browser storage size and can be lost if browser data is cleared.
+- Since this is a static frontend project, data does not sync across devices or browsers.
+- Deeply nested categories can become harder to manage visually in the sidebar.
+- Very large note collections may make rendering and filtering feel slower because everything is handled client-side in JavaScript.
+- Imported JSON still depends on the expected schema, so malformed or heavily edited files can create edge cases.
 
-### 1. Storage - JSON in localStorage
-Good:
-- Schema direction is correct: schemaVersion, categories with parentId, entries with categoryId, themes array.
+## What I Learned
+I learned a lot about structuring a frontend app without relying on frameworks. Separating storage, state, rendering, and event wiring made the project much easier to reason about as it grew. I also got more experience thinking about how UI design, data structure, and browser persistence all affect each other in a static app. Working with AI was helpful, but it also showed me that AI is very good at confidently coming up with whatever it wants, which can be a problem when my vision is more specific than its assumptions. Sometimes that meant I had to correct direction and keep refining outputs until they actually matched what I wanted. In more creative areas, though, it was really useful, especially for things like color palette ideas and exploring design directions quickly.
 
-Suggestions:
-- Add createdAt on entries for sorting/debugging.
-- Use namespaced localStorage key: triki_data.
-- Use crypto.randomUUID() for IDs.
-- Wrap setItem calls in try/catch to handle quota errors.
+## Consolidated Planning Details
 
-Warnings:
-- localStorage has size limits (around 5MB); large notes can approach limits.
+### Project Type and Scope
+- Website type: content management / personal knowledge base
+- Approach: static HTML, CSS, and JavaScript site
+- Complexity target: frontend-only with browser persistence
+- Primary goal: a usable, visually structured note system with customizable themes
 
-### 2. CRUD + Tree View
-Good:
-- Landing-page inline expand/collapse, inline edit, category reassignment, and delete controls provide tight UX.
+### Core Planned Features
+- CRUD note management with category assignment
+- Nested, color-coded category tree
+- Search by note title and note text
+- Category filtering without page reload
+- Collapsible sidebar navigation
+- Theme editor and saved theme management
+- Import and export of stored data
+- Reset and persistence using browser storage
 
-Suggestions:
-- Keep terminology clear: category tree in sidebar, note list/card stack in main view.
-- Use textarea auto-resize for inline note editing.
-- Prefer debounced auto-save for note text edits (for example around 800ms).
-- Category changes should save immediately.
-- Re-categorization should provide visual continuity (animation or highlight in new location).
+### Architecture Guardrail
+To keep complexity manageable, the logic was split into modules:
+- `storage.js` for localStorage load, save, defaults, and validation
+- `state.js` for in-memory state and mutations
+- `render.js` for UI rendering
+- `app.js` for startup, event binding, and orchestration
 
-Warnings:
-- Destructive delete should include confirmation or undo.
-- Category deletion behavior must be explicit. Recommended: block deletion until category has no children and no notes.
-
-### 3. Search + Filter
-Good:
-- Live search/filter without reload is correct.
-
-Suggestions:
-- Debounce search input (about 150-200ms).
-- Show explicit empty state when no results match.
-- Hide empty category sections for cleaner results.
-- Use AND logic when combining search query and category filter.
-
-Warnings:
-- Combined filter behavior must be documented in UI hints.
-
-### 4. Import / Export
-Good:
-- JSON backup/restore is appropriate for localStorage architecture.
-
-Suggestions:
-- Use timestamped export filenames, for example triki-backup-YYYY-MM-DD.json.
-- Confirm before replacing all current data.
-- Validate imported schema before accepting.
-
-Warnings:
-- Parse only with JSON.parse, never eval.
-- Sanitize imported data and keep only expected fields.
-- For safer replacement, validate before final write and avoid partial state transitions.
-
-### 5. Custom Theme Editor
-Suggestions:
-- Pair hex text input with input type=color.
-- Sync picker and hex input bidirectionally.
-- Apply live CSS variables with document.documentElement.style.setProperty.
-- Persist activeThemeId at schema root.
-- Provide per-theme Delete theme with guard to prevent deleting active theme.
-
-Warnings:
-- Avoid overcrowding root toolbar with full theme editor controls.
-- Validate hex format (#RRGGBB or #RGB) before applying.
-
-### 6. Sidebar Category Legend + New Category
-Good:
-- Sidebar legend doubles as navigation/filter surface.
-
-Suggestions:
-- Use input type=color for category creation and editing.
-- Show note counts per category.
-- Allow parent category selection for nesting.
-- Make category rows click-to-filter main notes.
-
-Warnings:
-- Guard category deletion when notes/children still exist.
-- Watch deep nesting usability in sidebar.
-
-## Architecture Guardrail
-
-To keep complexity manageable, use module separation:
-- storage.js: localStorage load/save/default/validation, no DOM.
-- state.js: in-memory state and mutation methods.
-- render.js: UI rendering only.
-- app.js: event binding, orchestration, startup.
-
-## Revised Data Schema (Planning Canonical)
-
+### Canonical Data Shape
+```json
 {
   "schemaVersion": 1,
   "activeThemeId": "theme-default",
@@ -138,30 +87,38 @@ To keep complexity manageable, use module separation:
     }
   ]
 }
+```
 
-Planning deltas from earliest draft:
-- Added activeThemeId.
-- Added createdAt on entries.
-- Added order on categories.
+### Planning Notes
+- Use a namespaced storage key such as `triki_data`
+- Use `crypto.randomUUID()` for IDs
+- Add `createdAt` to entries for ordering and debugging
+- Guard destructive category deletion when notes or child categories still exist
+- Debounce note autosave and search input for smoother UI behavior
+- Validate imported JSON before replacing current app data
+- Pair theme hex fields with color pickers and keep them synced
+- Persist the active theme at the root of the schema
 
-## Recommended Build Order (Original)
-1. Storage module: defaults, load/save, safety checks.
-2. Category sidebar: render and create first.
-3. Note list read/create.
-4. Note CRUD: expand, edit, delete, recategorize.
-5. Search/filter.
-6. Import/export.
-7. Theme editor and preset management.
+### Recommended Build Order
+1. Storage module and schema defaults
+2. Category sidebar and category creation
+3. Note creation and rendering
+4. Full note CRUD and recategorization
+5. Search and filtering
+6. Import and export
+7. Theme editor and theme persistence
 
-## Definition of Done (Mid-Term)
-- Core features functional with browser persistence.
-- No backend dependency.
-- Data survives refresh and browser reopen.
-- Baseline accessibility: labels, keyboard navigation, contrast.
-- README documents plan, architecture, and continuation strategy.
+### Definition of Done
+- Core features work entirely in the browser
+- No backend dependency is required
+- Data survives refresh and browser reopen
+- The interface remains usable with clear labels and basic keyboard support
+- The README documents the project, structure, and limitations
 
-## Continuation Focus (Current)
-- Finalize full theme editor UI and saved preset controls.
-- Ensure live CSS variable preview for all theme updates.
-- Preserve active theme across sessions via activeThemeId.
-- Guard against deleting the currently active theme.
+### Current File Structure
+- `index.html`
+- `styles.css`
+- `scripts/storage.js`
+- `scripts/state.js`
+- `scripts/render.js`
+- `scripts/app.js`
