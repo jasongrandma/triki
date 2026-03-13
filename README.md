@@ -1,71 +1,121 @@
 # Personal Custom Wiki
 
 ## Project Overview
-A static frontend **Personal Wiki** built with HTML, CSS, and JavaScript.
+Triki is a static frontend Personal Wiki built with HTML, CSS, and JavaScript.
 
-The app lets users create and organize notes using nested, color-coded categories in a vertical tree hierarchy. Data is stored in the browser using `localStorage` (JSON object structure), with no backend required.
+The app organizes notes in a color-coded structure with browser persistence via localStorage. No backend is required.
 
-## Project Type and Scope
-- **Website Type:** Content management / personal knowledge base (Personal Wiki)
-- **Approach:** Static HTML/CSS/JS site
-- **Complexity Target:** Frontend-only, browser persistence with `localStorage`
-- **Primary Goal:** Usable, visually structured note system with customizable themes
+## Original Planning Baseline (Conversation Start)
 
-## Core Features and Deliverables
+This README section records the original plan, recommendations, and warnings from the beginning of the project conversation so continuation work stays aligned with the initial strategy.
 
-### 1. CRUD Notes + Nested Category Tree (Color-Coded)
-**Deliverables (initial):**
-- Create, read, update, delete note entries.
-- Tree view for nested categories (vertical hierarchy).
-- Category object includes: id, name, color, parentId.
-- Entry object includes: id, title, notes, categoryId.
-- Add/edit/delete/rearrange categories (move up/down and re-parent by updating parentId).
-- Select category to view tagged entries.
-- Entry form includes title, notes, and category selection from the tree.
+## Initial Project State
+- Foundation was visually in place: CSS variables, sidebar/main layout, static placeholders.
+- Functional behavior was expected to be implemented in JavaScript modules.
 
-### 2. Search + Filters
-**Deliverables (initial):**
-- Global search bar in top navigation.
-- Search by note title and note text.
-- Filter by category (including optional child categories).
-- Results update without page reload.
+## Deliverable-by-Deliverable Plan Notes
 
-### 3. Collapsible Sidebar Navigation
-**Deliverables (initial):**
-- Sidebar toggle (open/close).
-- Table of contents for categories.
-- Quick links to major app sections (Home, New Entry, Manage Categories, Theme Settings).
+### 1. Storage - JSON in localStorage
+Good:
+- Schema direction is correct: schemaVersion, categories with parentId, entries with categoryId, themes array.
 
-### 4. Data Import/Export (Backup + Restore)
-**Deliverables (initial):**
-- Export wiki data JSON file from `localStorage`.
-- Import JSON backup to restore data.
-- Basic validation before import (required keys and structure).
-- Confirmation dialog before replacing existing data.
+Suggestions:
+- Add createdAt on entries for sorting/debugging.
+- Use namespaced localStorage key: triki_data.
+- Use crypto.randomUUID() for IDs.
+- Wrap setItem calls in try/catch to handle quota errors.
 
-### 5. Custom Color Themes (Saved Presets)
-**Deliverables (initial):**
-- Theme editor for primary, secondary, tertiary, and accent colors.
-- Apply theme instantly using CSS variables.
-- Save multiple custom theme presets in `localStorage`.
-- Rename, apply, and delete saved themes.
+Warnings:
+- localStorage has size limits (around 5MB); large notes can approach limits.
 
-## Suggested Data Model (High-Level)
-```json
+### 2. CRUD + Tree View
+Good:
+- Landing-page inline expand/collapse, inline edit, category reassignment, and delete controls provide tight UX.
+
+Suggestions:
+- Keep terminology clear: category tree in sidebar, note list/card stack in main view.
+- Use textarea auto-resize for inline note editing.
+- Prefer debounced auto-save for note text edits (for example around 800ms).
+- Category changes should save immediately.
+- Re-categorization should provide visual continuity (animation or highlight in new location).
+
+Warnings:
+- Destructive delete should include confirmation or undo.
+- Category deletion behavior must be explicit. Recommended: block deletion until category has no children and no notes.
+
+### 3. Search + Filter
+Good:
+- Live search/filter without reload is correct.
+
+Suggestions:
+- Debounce search input (about 150-200ms).
+- Show explicit empty state when no results match.
+- Hide empty category sections for cleaner results.
+- Use AND logic when combining search query and category filter.
+
+Warnings:
+- Combined filter behavior must be documented in UI hints.
+
+### 4. Import / Export
+Good:
+- JSON backup/restore is appropriate for localStorage architecture.
+
+Suggestions:
+- Use timestamped export filenames, for example triki-backup-YYYY-MM-DD.json.
+- Confirm before replacing all current data.
+- Validate imported schema before accepting.
+
+Warnings:
+- Parse only with JSON.parse, never eval.
+- Sanitize imported data and keep only expected fields.
+- For safer replacement, validate before final write and avoid partial state transitions.
+
+### 5. Custom Theme Editor
+Suggestions:
+- Pair hex text input with input type=color.
+- Sync picker and hex input bidirectionally.
+- Apply live CSS variables with document.documentElement.style.setProperty.
+- Persist activeThemeId at schema root.
+- Provide per-theme Delete theme with guard to prevent deleting active theme.
+
+Warnings:
+- Avoid overcrowding root toolbar with full theme editor controls.
+- Validate hex format (#RRGGBB or #RGB) before applying.
+
+### 6. Sidebar Category Legend + New Category
+Good:
+- Sidebar legend doubles as navigation/filter surface.
+
+Suggestions:
+- Use input type=color for category creation and editing.
+- Show note counts per category.
+- Allow parent category selection for nesting.
+- Make category rows click-to-filter main notes.
+
+Warnings:
+- Guard category deletion when notes/children still exist.
+- Watch deep nesting usability in sidebar.
+
+## Architecture Guardrail
+
+To keep complexity manageable, use module separation:
+- storage.js: localStorage load/save/default/validation, no DOM.
+- state.js: in-memory state and mutation methods.
+- render.js: UI rendering only.
+- app.js: event binding, orchestration, startup.
+
+## Revised Data Schema (Planning Canonical)
+
 {
   "schemaVersion": 1,
+  "activeThemeId": "theme-default",
   "categories": [
     {
       "id": "cat-1",
       "name": "Programming",
       "color": "#4f46e5",
-      "parentId": null
-    },
-    {
-      "id": "cat-2",
-      "name": "JavaScript",
-      "color": "#4f46e5",
-      "parentId": "cat-1"
+      "parentId": null,
+      "order": 0
     }
   ],
   "entries": [
@@ -73,73 +123,45 @@ The app lets users create and organize notes using nested, color-coded categorie
       "id": "entry-1",
       "title": "Array Methods",
       "notes": "map, filter, reduce...",
-      "categoryId": "cat-2"
+      "categoryId": "cat-1",
+      "createdAt": "2026-03-13T00:00:00Z"
     }
   ],
   "themes": [
     {
-      "id": "theme-1",
-      "name": "Ocean",
-      "primary": "#0ea5e9",
-      "secondary": "#1e293b",
-      "tertiary": "#334155",
-      "accent": "#22d3ee"
+      "id": "theme-default",
+      "name": "Default",
+      "primary": "#f3f4f6",
+      "secondary": "#e5e7eb",
+      "tertiary": "#d1d5db",
+      "accent": "#6b7280"
     }
   ]
 }
-```
 
-## Data Rules (MVP)
-- Category hierarchy is represented by `parentId` (`null` = top-level category).
-- Category colors use hex format (`#RRGGBB`).
-- Entry-category relation is stored only on entries (`entry.categoryId`).
-- Rearranging categories updates only `parentId`.
-- Invalid move is blocked: a category cannot be moved into its own descendant.
+Planning deltas from earliest draft:
+- Added activeThemeId.
+- Added createdAt on entries.
+- Added order on categories.
 
-## Tech Stack
-- **Structure:** HTML5
-- **Styling:** CSS3 (with CSS custom properties / variables)
-- **Behavior:** Vanilla JavaScript (ES6+)
-- **Persistence:** `localStorage` (JSON serialization)
-- **Optional later upgrade:** IndexedDB if data size/performance outgrows `localStorage`
-
-## Milestone Plan (Simple)
-### Milestone 1 — Foundation
-- Base layout: navbar, sidebar, main content, category tree panel.
-- Local storage utility module (load/save/default data).
-
-### Milestone 2 — Vertical Slice (End-to-End)
-- Create category.
-- Create entry in selected category.
-- View entries for selected category after refresh.
-
-### Milestone 3 — Categories + Entries
-- Category tree rendering and category CRUD/rearrange.
-- Entry CRUD with category assignment.
-
-### Milestone 4 — Search + Navigation
-- Global search and category filters.
-- Sidebar table of contents and navigation polish.
-
-### Milestone 5 — Themes
-- Theme editor and preset management.
-
-### Milestone 6 — Data Portability
-- Import/export backup and restore flow.
-
-### Milestone 7 — QA + Submission Prep
-- Test core user flows and edge cases.
-- Clean UI text and accessibility pass.
-- Final README and demo checklist.
-
-## MVP Non-Goals
-- No authentication or user accounts.
-- No backend database or server APIs.
-- No real-time collaboration.
+## Recommended Build Order (Original)
+1. Storage module: defaults, load/save, safety checks.
+2. Category sidebar: render and create first.
+3. Note list read/create.
+4. Note CRUD: expand, edit, delete, recategorize.
+5. Search/filter.
+6. Import/export.
+7. Theme editor and preset management.
 
 ## Definition of Done (Mid-Term)
-- All planned core features are functional with browser persistence.
+- Core features functional with browser persistence.
 - No backend dependency.
-- Data survives browser refresh/reopen.
-- Interface supports basic accessibility (labels, keyboard navigation, contrast checks).
-- README documents setup, usage, and feature list.
+- Data survives refresh and browser reopen.
+- Baseline accessibility: labels, keyboard navigation, contrast.
+- README documents plan, architecture, and continuation strategy.
+
+## Continuation Focus (Current)
+- Finalize full theme editor UI and saved preset controls.
+- Ensure live CSS variable preview for all theme updates.
+- Preserve active theme across sessions via activeThemeId.
+- Guard against deleting the currently active theme.
